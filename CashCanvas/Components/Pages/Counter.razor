@@ -4,14 +4,13 @@
 @using Microsoft.AspNetCore.Identity
 @using CashCanvas.Data
 @using CashCanvas.Entities
-@using Microsoft.EntityFrameworkCore
+@using CashCanvas.Services
 
 @attribute [Authorize]
 
-@inject ApplicationDbContext DbContext
+@inject UserStatsService StatsService
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
-
 
 @rendermode InteractiveServer
 
@@ -26,64 +25,32 @@
 @code {
     private int currentCount = 0;
     private string? userId;
+    private UserStats? userStats;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        
+
         if (user.Identity?.IsAuthenticated == true)
         {
             userId = UserManager.GetUserId(user);
-    
+
             if (userId != null)
             {
-                var stats = await DbContext.UserStats.FirstOrDefaultAsync(s => s.UserId == userId);
-            
-                if (stats == null)
-                {
-                    // Create initial entry for new user
-                    stats = new UserStats
-                    {
-                        UserId = userId,
-                        TotalCounterClicks = 0
-                    };
-                    DbContext.UserStats.Add(stats);
-                    await DbContext.SaveChangesAsync();
-                }
-            
-                currentCount = stats.TotalCounterClicks;
+                userStats = await StatsService.GetOrCreateStatsAsync(userId);
+                currentCount = userStats.TotalCounterClicks;
             }
         }
     }
-    
-    
-    
+
     private async Task IncrementCount()
     {
-        Console.WriteLine("Current count incrementing...");
-        currentCount++;
-        
-        if (userId != null)
+        if (userStats != null)
         {
-            var stats = await DbContext.UserStats.FirstOrDefaultAsync(s => s.UserId == userId);
-            
-            if (stats == null)
-            {
-                stats = new UserStats
-                {
-                    UserId = userId,
-                    TotalCounterClicks = currentCount
-                };
-                DbContext.UserStats.Add(stats);
-            }
-            else
-            {
-                stats.TotalCounterClicks = currentCount;
-                DbContext.UserStats.Update(stats);
-            }
-            
-            await DbContext.SaveChangesAsync();
+            currentCount++;
+            userStats.TotalCounterClicks = currentCount;
+            await StatsService.UpdateStatsAsync(userStats);
         }
     }
 }

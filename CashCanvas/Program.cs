@@ -7,7 +7,8 @@ using MudBlazor.Services;
 using CashCanvas.Components;
 using CashCanvas.Components.Account;
 using CashCanvas.Data;
-
+using CashCanvas.Data.Repository;
+using CashCanvas.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,10 +30,24 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+if (builder.Environment.IsDevelopment())
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlite(connectionString));
+}
+// else
+// {
+//     var connectionString = builder.Configuration.GetConnectionString("PostgresConnection") ?? throw new InvalidOperationException("Connection string 'PostgresConnection' not found.");
+//     builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//         options.UseNpgsql(connectionString));
+// }
+
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<UserStatsService>();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
     {
