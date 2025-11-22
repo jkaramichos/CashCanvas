@@ -38,7 +38,7 @@
 
             if (userId != null)
             {
-                userStats = await StatsService.GetOrCreateStatsAsync(userId);
+                userStats = await StatsService.GetStatsAsync(userId);
                 currentCount = userStats.TotalCounterClicks;
             }
         }

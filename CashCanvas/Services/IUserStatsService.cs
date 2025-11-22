@@ -12,7 +12,7 @@ public interface IUserStatsService
     /// </summary>
     /// <param name="userId">The ID of the user.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the user's statistics.</returns>
-    Task<UserStats> GetOrCreateStatsAsync(string userId);
+    Task<UserStats> GetStatsAsync(string userId);
 
     /// <summary>
     /// Updates the statistics for a user.

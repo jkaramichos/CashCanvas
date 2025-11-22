@@ -12,7 +12,7 @@ public class UserStatsService : IUserStatsService
         _statsRepository = statsRepository;
     }
 
-    public async Task<UserStats> GetOrCreateStatsAsync(string userId)
+    public async Task<UserStats> GetStatsAsync(string userId)
     {
         var stats = await _statsRepository.FirstOrDefaultAsync(s => s.UserId == userId);
 
