@@ -8,11 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 using MudBlazor.Services;
-using System.Threading.Tasks; // Add this using for Task
+using System.Threading.Tasks;
+using CashCanvas.Services.Interfaces; // Add this using for Task
 
-namespace CashCanvas.Tests.ComponentTests;
+namespace CashCanvas.Tests.Unit.Components;
 
-public class CounterUnitTests : TestContext
+public class CounterUnitTests : BunitContext
 {
     public CounterUnitTests()
     {

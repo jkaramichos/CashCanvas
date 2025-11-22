@@ -2,10 +2,11 @@
 using CashCanvas.Data.Repository;
 using CashCanvas.Entities;
 using CashCanvas.Services;
+using CashCanvas.Services.Implementations;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace CashCanvas.Tests.IntegrationTests.Services;
+namespace CashCanvas.Tests.Integration.Services;
 
 public class UserStatsServiceIntegrationTests
 {

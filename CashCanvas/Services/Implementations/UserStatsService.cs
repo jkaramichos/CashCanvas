@@ -1,7 +1,8 @@
 ﻿using CashCanvas.Data.Repository;
 using CashCanvas.Entities;
+using CashCanvas.Services.Interfaces;
 
-namespace CashCanvas.Services;
+namespace CashCanvas.Services.Implementations;
 
 public class UserStatsService : IUserStatsService
 {

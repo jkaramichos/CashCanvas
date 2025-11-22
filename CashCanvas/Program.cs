@@ -9,6 +9,10 @@ using CashCanvas.Components.Account;
 using CashCanvas.Data;
 using CashCanvas.Data.Repository;
 using CashCanvas.Services;
+using CashCanvas.Services.Implementations;
+using CashCanvas.Services.Interfaces;
+
+using Going.Plaid;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +22,13 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddMudServices();
+
+builder.Services.AddPlaid(builder.Configuration);
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IUserStatsService, UserStatsService>();
+builder.Services.AddScoped<IPlaidClientAdapter, PlaidClientAdapter>();
+builder.Services.AddScoped<IPlaidService, PlaidService>();
+
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
@@ -45,9 +56,6 @@ if (builder.Environment.IsDevelopment())
 
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddScoped<IUserStatsService, UserStatsService>();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
     {

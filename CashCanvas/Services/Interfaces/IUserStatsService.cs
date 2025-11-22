@@ -1,6 +1,6 @@
 ﻿using CashCanvas.Entities;
 
-namespace CashCanvas.Services;
+namespace CashCanvas.Services.Interfaces;
 
 /// <summary>
 /// Defines the contract for a service that manages user statistics.

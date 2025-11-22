@@ -2,9 +2,10 @@
 using CashCanvas.Data.Repository;
 using CashCanvas.Entities;
 using CashCanvas.Services;
+using CashCanvas.Services.Implementations;
 using Moq;
 
-namespace CashCanvas.Tests.UnitTests.Services;
+namespace CashCanvas.Tests.Unit.Services;
 
 public class UserStatsServiceUnitTests
 {

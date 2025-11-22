@@ -1,7 +1,31 @@
 ﻿@page "/"
+@using CashCanvas.Services.Interfaces
+
+@inject IPlaidService PlaidService
+@inject IJSRuntime JSRuntime
+
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<MudButton OnClick="@StartPlaidLink" Variant="Variant.Filled" Color="Color.Primary">Connect With Plaid</MudButton>
+
+@code 
+{
+    private async Task StartPlaidLink()
+    {
+        Console.WriteLine("Starting plaid link...");
+        // This code runs on the server.
+        // It can safely call the service and access secrets.
+        var userId = "test-user-id"; // Get the real user ID
+        var linkToken = await PlaidService.CreateLinkTokenAsync(userId);
+
+        // Use JS Interop to call a JavaScript function on the client
+        // and pass it the link_token to open Plaid Link.
+        await JSRuntime.InvokeVoidAsync("plaidLink.open", linkToken);
+    }
+}
