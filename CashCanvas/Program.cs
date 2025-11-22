@@ -47,7 +47,7 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddScoped<UserStatsService>();
+builder.Services.AddScoped<IUserStatsService, UserStatsService>();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
     {

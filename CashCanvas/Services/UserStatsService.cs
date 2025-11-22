@@ -3,7 +3,7 @@ using CashCanvas.Entities;
 
 namespace CashCanvas.Services;
 
-public class UserStatsService
+public class UserStatsService : IUserStatsService
 {
     private readonly IRepository<UserStats> _statsRepository;
 
