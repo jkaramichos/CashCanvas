@@ -8,8 +8,8 @@ using CashCanvas.Components;
 using CashCanvas.Components.Account;
 using CashCanvas.Data;
 using CashCanvas.Data.Repository;
+using CashCanvas.Entities;
 using CashCanvas.Services;
-using CashCanvas.Services.Implementations;
 using CashCanvas.Services.Interfaces;
 
 using Going.Plaid;

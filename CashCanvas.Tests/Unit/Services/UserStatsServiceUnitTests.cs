@@ -1,9 +1,9 @@
-﻿using System.Linq.Expressions;
-using CashCanvas.Data.Repository;
+﻿using CashCanvas.Data.Repository;
+using CashCanvas.Dtos;
 using CashCanvas.Entities;
 using CashCanvas.Services;
-using CashCanvas.Services.Implementations;
 using Moq;
+using System.Linq.Expressions;
 
 namespace CashCanvas.Tests.Unit.Services;
 
@@ -62,16 +62,41 @@ public class UserStatsServiceUnitTests
     }
 
     [Fact]
-    public async Task UpdateStatsAsync_ShouldCallUpdateAndSaveChangesAsync()
+    public async Task UpdateStatsAsync_ShouldUpdateExistingStats_WhenStatsExist()
     {
         // Arrange
-        var statsToUpdate = new UserStats { UserId = "test-user", TotalCounterClicks = 5 };
+        var userId = "test-user";
+        var statsDto = new UserStatsDto { UserId = userId, TotalCounterClicks = 15 };
+        var existingStats = new UserStats { UserId = userId, TotalCounterClicks = 10 };
+
+        _mockStatsRepository
+            .Setup(repo => repo.FirstOrDefaultAsync(It.IsAny<Expression<Func<UserStats, bool>>>()))
+            .ReturnsAsync(existingStats);
 
         // Act
-        await _sut.UpdateStatsAsync(statsToUpdate);
+        await _sut.UpdateStatsAsync(statsDto);
 
         // Assert
-        _mockStatsRepository.Verify(repo => repo.Update(statsToUpdate), Times.Once);
+        _mockStatsRepository.Verify(repo => repo.Update(It.Is<UserStats>(s => s.TotalCounterClicks == 15)), Times.Once);
         _mockStatsRepository.Verify(repo => repo.SaveChangesAsync(), Times.Once);
+        Assert.Equal(15, existingStats.TotalCounterClicks); // Verify the entity was modified
+    }
+
+    [Fact]
+    public async Task UpdateStatsAsync_ShouldNotCallUpdate_WhenStatsDoNotExist()
+    {
+        // Arrange
+        var statsDto = new UserStatsDto { UserId = "non-existent-user", TotalCounterClicks = 5 };
+
+        _mockStatsRepository
+            .Setup(repo => repo.FirstOrDefaultAsync(It.IsAny<Expression<Func<UserStats, bool>>>()))
+            .ReturnsAsync((UserStats?)null);
+
+        // Act
+        await _sut.UpdateStatsAsync(statsDto);
+
+        // Assert
+        _mockStatsRepository.Verify(repo => repo.Update(It.IsAny<UserStats>()), Times.Never);
+        _mockStatsRepository.Verify(repo => repo.SaveChangesAsync(), Times.Never);
     }
 }

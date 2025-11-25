@@ -1,4 +1,5 @@
-﻿using CashCanvas.Entities;
+﻿using CashCanvas.Dtos;
+using CashCanvas.Entities;
 
 namespace CashCanvas.Services.Interfaces;
 
@@ -12,13 +13,13 @@ public interface IUserStatsService
     /// </summary>
     /// <param name="userId">The ID of the user.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the user's statistics.</returns>
-    Task<UserStats> GetStatsAsync(string userId);
+    Task<UserStatsDto> GetStatsAsync(string userId);
 
     /// <summary>
     /// Updates the statistics for a user.
     /// </summary>
     /// <param name="stats">The user statistics to update.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    Task UpdateStatsAsync(UserStats stats);
+    Task UpdateStatsAsync(UserStatsDto stats);
 }
 

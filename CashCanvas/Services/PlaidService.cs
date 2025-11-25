@@ -1,19 +1,14 @@
 ﻿// CashCanvas/Services/Implementations/PlaidService.cs
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 using CashCanvas.Dtos.Plaid;
 using CashCanvas.Services.Interfaces;
-using Going.Plaid;
 using Going.Plaid.Accounts;
 using Going.Plaid.Entity;
 using Going.Plaid.Item;
 using Going.Plaid.Link;
 using Going.Plaid.Transactions;
-using Microsoft.Extensions.Logging;
 
-namespace CashCanvas.Services.Implementations;
+namespace CashCanvas.Services;
 
 public class PlaidService : IPlaidService
 {

@@ -5,7 +5,7 @@ using Going.Plaid.Item;
 using Going.Plaid.Link;
 using Going.Plaid.Transactions;
 
-namespace CashCanvas.Services.Implementations;
+namespace CashCanvas.Services;
 
 public class PlaidClientAdapter : IPlaidClientAdapter
 {

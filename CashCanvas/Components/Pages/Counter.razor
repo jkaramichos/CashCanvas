@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using CashCanvas.Data
+@using CashCanvas.Dtos
 @using CashCanvas.Entities
 @using CashCanvas.Services
 @using CashCanvas.Services.Interfaces
@@ -26,7 +27,7 @@
 @code {
     private int currentCount = 0;
     private string? userId;
-    private UserStats? userStats;
+    private UserStatsDto? userStats;
 
     protected override async Task OnInitializedAsync()
     {

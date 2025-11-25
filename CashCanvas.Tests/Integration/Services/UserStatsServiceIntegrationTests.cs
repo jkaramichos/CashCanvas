@@ -2,9 +2,9 @@
 using CashCanvas.Data.Repository;
 using CashCanvas.Entities;
 using CashCanvas.Services;
-using CashCanvas.Services.Implementations;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
+using CashCanvas.Dtos;
 
 namespace CashCanvas.Tests.Integration.Services;
 
@@ -42,7 +42,7 @@ public class UserStatsServiceIntegrationTests
         Assert.Equal(0, result.TotalCounterClicks);
 
         // 2. Verify the data was actually saved to the database
-        var statsInDb = await context.UserStats.FindAsync(result.UserStatsId);
+        var statsInDb = await context.UserStats.FirstOrDefaultAsync(s => s.UserId == userId);
         Assert.NotNull(statsInDb);
         Assert.Equal(userId, statsInDb.UserId);
     }
@@ -77,6 +77,40 @@ public class UserStatsServiceIntegrationTests
             
             // Verify no new record was created
             Assert.Equal(1, await context.UserStats.CountAsync());
+        }
+    }
+    
+    [Fact]
+    public async Task UpdateStatsAsync_ShouldUpdateDatabase_WhenStatsExist()
+    {
+        // Arrange
+        var userId = "update-integration-user";
+        var initialStats = new UserStats { UserId = userId, TotalCounterClicks = 100 };
+
+        // Seed the database
+        await using (var context = new ApplicationDbContext(_dbContextOptions))
+        {
+            context.UserStats.Add(initialStats);
+            await context.SaveChangesAsync();
+        }
+
+        // Act
+        await using (var context = new ApplicationDbContext(_dbContextOptions))
+        {
+            var repository = new Repository<UserStats>(context);
+            var sut = new UserStatsService(repository);
+            
+            var updateDto = new UserStatsDto { UserId = userId, TotalCounterClicks = 150 };
+            await sut.UpdateStatsAsync(updateDto);
+        }
+
+        // Assert
+        // Use a separate context to ensure the data was persisted and not just tracked in memory
+        await using (var context = new ApplicationDbContext(_dbContextOptions))
+        {
+            var updatedStats = await context.UserStats.FirstOrDefaultAsync(s => s.UserId == userId);
+            Assert.NotNull(updatedStats);
+            Assert.Equal(150, updatedStats.TotalCounterClicks);
         }
     }
 }

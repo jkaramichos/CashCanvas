@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using CashCanvas.Data;
+using CashCanvas.Entities;
 
 namespace CashCanvas.Components.Account;
 

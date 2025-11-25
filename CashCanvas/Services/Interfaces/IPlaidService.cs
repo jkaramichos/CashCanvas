@@ -6,6 +6,9 @@ using CashCanvas.Dtos.Plaid;
 
 namespace CashCanvas.Services.Interfaces;
 
+/// <summary>
+/// Handles all API Calls to Plaid. Use the IPlaidUserDataRepository to persist any data retrieved from Plaid.
+/// </summary>
 public interface IPlaidService
 {
     /// <summary>

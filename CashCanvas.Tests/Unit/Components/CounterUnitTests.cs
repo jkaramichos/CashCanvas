@@ -9,6 +9,7 @@ using Moq;
 using Xunit;
 using MudBlazor.Services;
 using System.Threading.Tasks;
+using CashCanvas.Dtos;
 using CashCanvas.Services.Interfaces; // Add this using for Task
 
 namespace CashCanvas.Tests.Unit.Components;
@@ -28,7 +29,7 @@ public class CounterUnitTests : BunitContext
 
         var mockStatsService = new Mock<IUserStatsService>();
         mockStatsService.Setup(s => s.GetStatsAsync(userId))
-            .ReturnsAsync(() => new UserStats { UserId = userId, TotalCounterClicks = 5 });
+            .ReturnsAsync(() => new UserStatsDto { UserId = userId, TotalCounterClicks = 5 });
 
         var mockUserManager = new Mock<UserManager<ApplicationUser>>(
             Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
@@ -59,15 +60,15 @@ public class CounterUnitTests : BunitContext
     {
         // Arrange
         var userId = "test-user-id";
-        UserStats? capturedStats = null;
+        UserStatsDto? capturedStats = null;
 
         var mockStatsService = new Mock<IUserStatsService>();
         // Return a new object each time to prevent mutation issues
         mockStatsService.Setup(s => s.GetStatsAsync(userId))
-            .ReturnsAsync(() => new UserStats { UserId = userId, TotalCounterClicks = 5 });
+            .ReturnsAsync(() => new UserStatsDto { UserId = userId, TotalCounterClicks = 5 });
 
-        mockStatsService.Setup(s => s.UpdateStatsAsync(It.IsAny<UserStats>()))
-            .Callback<UserStats>(stats => capturedStats = stats)
+        mockStatsService.Setup(s => s.UpdateStatsAsync(It.IsAny<UserStatsDto>()))
+            .Callback<UserStatsDto>(stats => capturedStats = stats)
             .Returns(Task.CompletedTask);
 
         var mockUserManager = new Mock<UserManager<ApplicationUser>>(
@@ -104,7 +105,7 @@ public class CounterUnitTests : BunitContext
 
 
         // Verify the service call and the captured object
-        mockStatsService.Verify(s => s.UpdateStatsAsync(It.IsAny<UserStats>()), Times.Once);
+        mockStatsService.Verify(s => s.UpdateStatsAsync(It.IsAny<UserStatsDto>()), Times.Once);
         Assert.NotNull(capturedStats);
         Assert.Equal(6, capturedStats.TotalCounterClicks);
     }

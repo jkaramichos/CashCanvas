@@ -10,6 +10,7 @@ using Microsoft.Extensions.Primitives;
 using CashCanvas.Components.Account.Pages;
 using CashCanvas.Components.Account.Pages.Manage;
 using CashCanvas.Data;
+using CashCanvas.Entities;
 
 namespace Microsoft.AspNetCore.Routing;
 

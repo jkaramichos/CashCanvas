@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CashCanvas.Services.Implementations;
+using CashCanvas.Services;
 using Going.Plaid;
 using Going.Plaid.Entity;
 using Going.Plaid.Sandbox;

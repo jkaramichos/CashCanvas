@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using CashCanvas.Data;
+using CashCanvas.Entities;
 
 namespace CashCanvas.Components.Account;
 
