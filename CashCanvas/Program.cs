@@ -29,7 +29,6 @@ builder.Services.AddScoped<IUserStatsService, UserStatsService>();
 builder.Services.AddScoped<IPlaidClientAdapter, PlaidClientAdapter>();
 builder.Services.AddScoped<IPlaidService, PlaidService>();
 
-
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
@@ -41,18 +40,19 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
+// Development uses local Sqlite, production uses Postgres
 if (builder.Environment.IsDevelopment())
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlite(connectionString));
 }
-// else
-// {
-//     var connectionString = builder.Configuration.GetConnectionString("PostgresConnection") ?? throw new InvalidOperationException("Connection string 'PostgresConnection' not found.");
-//     builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//         options.UseNpgsql(connectionString));
-// }
+else
+{
+    var connectionString = builder.Configuration.GetConnectionString("PostgresConnection") ?? throw new InvalidOperationException("Connection string 'PostgresConnection' not found.");
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(connectionString));
+}
 
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();

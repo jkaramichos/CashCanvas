@@ -1,8 +1,14 @@
 ﻿@page "/"
+@using System.Security.Claims
 @using CashCanvas.Services.Interfaces
+@using Microsoft.JSInterop
+@using Microsoft.Extensions.Logging
 
 @inject IPlaidService PlaidService
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime JsRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILogger<Home> Logger
+
 
 @rendermode InteractiveServer
 
@@ -12,20 +18,74 @@
 
 Welcome to your new app.
 
-<MudButton OnClick="@StartPlaidLink" Variant="Variant.Filled" Color="Color.Primary">Connect With Plaid</MudButton>
+<AuthorizeView>
+    <Authorized>
+        <MudButton OnClick="@StartPlaidLink" Variant="Variant.Filled" Color="Color.Primary">Connect With Plaid</MudButton>
+    </Authorized>
+    <NotAuthorized>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="true">Connect With Plaid</MudButton>
+        <p><em>You must be logged in to connect with Plaid.</em></p>
+    </NotAuthorized>
+</AuthorizeView>
 
-@code 
+
+@code
 {
+    private static IPlaidService? _plaidService;
+    private static ILogger<Home>? _logger;
+    private static string? _currentUserId;
+
+    protected override void OnInitialized()
+    {
+        // Make services and user info available to the static JSInvokable method
+        _plaidService = PlaidService;
+        _logger = Logger;
+        var authState = AuthenticationStateProvider.GetAuthenticationStateAsync().Result;
+        _currentUserId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    }
+
     private async Task StartPlaidLink()
     {
-        Console.WriteLine("Starting plaid link...");
-        // This code runs on the server.
-        // It can safely call the service and access secrets.
-        var userId = "test-user-id"; // Get the real user ID
-        var linkToken = await PlaidService.CreateLinkTokenAsync(userId);
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-        // Use JS Interop to call a JavaScript function on the client
-        // and pass it the link_token to open Plaid Link.
-        await JSRuntime.InvokeVoidAsync("plaidLink.open", linkToken);
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger?.LogError("Error: User is authenticated but user ID claim is missing.");
+                return;
+            }
+
+            _logger?.LogInformation("Starting Plaid Link for user {UserId}...", userId);
+            var linkToken = await PlaidService.CreateLinkTokenAsync(userId);
+
+            await JsRuntime.InvokeVoidAsync("plaidLink.open", linkToken);
+        }
+    }
+    
+    [JSInvokable]
+    public static async Task ReceivePlaidPublicToken(string publicToken)
+    {
+        if (_plaidService is null || _logger is null || string.IsNullOrEmpty(_currentUserId))
+        {
+            _logger?.LogError("Cannot process Plaid public token due to uninitialized services or missing user ID.");
+            return;
+        }
+
+        try
+        {
+            var accessToken = await _plaidService.ExchangePublicTokenAsync(publicToken);
+            _logger.LogInformation("Successfully exchanged public token for an access token for user {UserId}. Access Token: {AccessToken}", _currentUserId, accessToken);
+
+            // TODO: Securely store the access token associated with the _currentUserId.
+            // For example: await _userDataRepository.StorePlaidAccessTokenAsync(_currentUserId, accessToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error exchanging Plaid public token for user {UserId}.", _currentUserId);
+        }
     }
 }
