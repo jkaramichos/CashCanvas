@@ -43,17 +43,19 @@ builder.Services.AddAuthentication(options =>
 // Development uses local Sqlite, production uses Postgres
 if (builder.Environment.IsDevelopment())
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlite(connectionString));
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? 
+                           throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+    
+    builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
 }
 else
 {
-    var connectionString = builder.Configuration.GetConnectionString("PostgresConnection") ?? throw new InvalidOperationException("Connection string 'PostgresConnection' not found.");
+    var connectionString = builder.Configuration.GetConnectionString("PostgresConnection") ?? 
+                           throw new InvalidOperationException("Connection string 'PostgresConnection' not found.");
+    
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseNpgsql(connectionString));
 }
-
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
